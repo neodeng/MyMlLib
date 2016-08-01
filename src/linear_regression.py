@@ -11,7 +11,9 @@
                       2) stochastic gradient decent(SGD):
                          upgrade all the parameters for each example
                      
-    Locally Weighted:
+    Locally Weighted:  W = w(i,i) = exp(-(x(i)-x)^2/(2k^2))
+                       x is the query point, k is the bandwidth parameter
+                       
     Shrinkage Method:
     Forward Regression:
 """
@@ -35,6 +37,7 @@ class LinearRegression:
         self.method = method
         self.fit_intercept = fit_intercept
         self.coef_ = []
+        self.yHat = []
         
     def fit(self, X, y):
         X = np.mat(X)
@@ -43,16 +46,13 @@ class LinearRegression:
             X = np.c_[np.ones((X.shape[0],1)), X]
         if self.method == 'norm':
             self.coef_ = LinearRegression.fit_norm(X, y)
-            print self.coef_
-            return
+            return self.coef_
         if self.method == 'SGD':
             self.coef_ = LinearRegression.fit_sgd(X, y, alpha=0.01, iternum=100)
-            print self.coef_
-            return
+            return self.coef_
         if self.method == 'LOCAL':
-            self.coef_ = LinearRegression.fit_local(X, y)
-            print self.coef_
-            return
+            self.yHat = LinearRegression.fit_local(X, y, k=0.01)
+            return self.yHat
 
     @staticmethod
     def fit_norm(X, y):
@@ -65,7 +65,7 @@ class LinearRegression:
             return
     
     @staticmethod
-    def fit_sgd(X, y, alpha, iternum):
+    def fit_sgd(X, y, alpha=0.01, iternum=100):
         """ The stochastic gradient method 
             alpha | the learning rate
             iternum | the number of iteration
@@ -81,7 +81,26 @@ class LinearRegression:
                 coef = coef + alpha * error * X[i].T
         return coef
                 
+    @staticmethod
+    def fit_local(X, y, k=0.01):
+        """ The local weighted regression method
+            k | the bandwidth parameter
+        """
+        n = X.shape[0]
+        m = X.shape[1]
+        yHat = []
+        for j in range(n):
+            W = np.mat(np.eye((n)))
+            for i in range(n):
+                diff = X[j,:] - X[i,:]
+                W[i,i] = np.exp(-diff*diff.T/2/k/k)
+            coef = ((X.T*W*X).I)*X.T*W*y
+            yH = X[j,:]*coef
+            yHat.append(yH[0,0])
+        return yHat
             
+        
+    
             
     
                 
