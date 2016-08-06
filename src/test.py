@@ -17,11 +17,11 @@ for line in f.readlines():
 
 print 'norm equation method:'
 ns = lr('norm',False)
-ns.fit(x,y)
+print ns.fit(x,y)
 
 print 'ridge regression method:'
 rs = lr('ridge',False)
-rs.fit(x,y)
+print rs.fit(x,y)
 
 '''
 print 'SGD method:'

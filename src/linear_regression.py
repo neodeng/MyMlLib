@@ -18,7 +18,14 @@
                        beta for min{||X*beta-y||^2 + lambda*||beta||^2}
                        beta_hat = (X.T*X+lambda*I)^-1*X.T*y
                        
-    Forward Regression:
+    Forward Regression:  first. z-score regularize for X and y
+                         second. iterate iternum:
+                                     minErr = inf
+                                     for each Beta[j]:
+                                         +|- step
+                                         minErr = min(minErr, Err)
+                                         beta_max
+                                     beta = beta_max
 """
 
 # @neodeng
@@ -57,8 +64,11 @@ class LinearRegression:
             self.yHat = LinearRegression.fit_local(X, y, k=0.01)
             return self.yHat
         if self.method == 'ridge':
-            self.coef_ = LinearRegression.fit_ridge(X, y, lmd=1)
+            self.coef_ = LinearRegression.fit_ridge(X, y, lmd=0.001)
             return self.coef_
+        if self.method == 'stage':
+            coef_list = LinearRegression.fit_stage(X, y, step=0.01, iternum=100) 
+            return coef_list
         
 
     @staticmethod
@@ -111,7 +121,7 @@ class LinearRegression:
         """ The ridge regression method
             lambda | the penalize parameter
         """
-        m = X.shape[0]
+        m = X.shape[1]
         E = np.mat(np.eye(m))
         try:
             coef = (X.T*X+lmd*E).I*X.T*y
@@ -120,6 +130,37 @@ class LinearRegression:
             print 'Cant not use norm equation method!', e
             return
             
-    
-                
+    @staticmethod
+    def fit_stage(X, y, step=0.01, iternum=100):
+        """ The stage wise method
+            step | change of beta[j]
+            iternum | the number of iteration
+        """
+        X = LinearRegression._regularize(X)
+        y = y - np.mean(y)
+        n, m = X.shape
+        W = np.zeros((iternum,m))
+        w = np.mat(np.zeros((m,1)))
+        wtest = w.copy()
+        wmax = w.copy()
+        for i in range(iternum):
+            minErr = np.inf
+            for j in range(m):
+                for sig in [-1, 1]:
+                    wtest = ws.copy()
+                    wtest[j] += step*sig
+                    ytest = X*wtest
+                    rssE = LinearRegression._rss(ytest, y)
+                    if rssE < minErr:
+                        minErr = rssE
+                        wmax = wtest
+            w = wmax.copy()
+            W[i,:] = w.T
+        return W
+        
+    @staticmethod
+    def _regularize(A):
+        
+        
+        
 
