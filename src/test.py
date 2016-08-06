@@ -14,15 +14,20 @@ for line in f.readlines():
     x.append(s[:-1])
     y.append([s[-1]])
 
-'''
+
 print 'norm equation method:'
 ns = lr('norm',False)
 ns.fit(x,y)
 
+print 'ridge regression method:'
+rs = lr('ridge',False)
+rs.fit(x,y)
+
+'''
 print 'SGD method:'
 ls = lr('SGD',False)
 ls.fit(x,y)
-'''
+
 ls = lr('LOCAL',False)
 yy=ls.fit(x,y)
 
@@ -40,5 +45,5 @@ bx = fig.add_subplot(212)
 bx.scatter(X,yy)
 plt.show()
 
-
+'''
 

@@ -14,7 +14,10 @@
     Locally Weighted:  W = w(i,i) = exp(-(x(i)-x)^2/(2k^2))
                        x is the query point, k is the bandwidth parameter
                        
-    Shrinkage Method:
+    Shrinkage Method:  Ridge Regression -> L2 Regulation
+                       beta for min{||X*beta-y||^2 + lambda*||beta||^2}
+                       beta_hat = (X.T*X+lambda*I)^-1*X.T*y
+                       
     Forward Regression:
 """
 
@@ -47,12 +50,16 @@ class LinearRegression:
         if self.method == 'norm':
             self.coef_ = LinearRegression.fit_norm(X, y)
             return self.coef_
-        if self.method == 'SGD':
+        if self.method == 'sgd':
             self.coef_ = LinearRegression.fit_sgd(X, y, alpha=0.01, iternum=100)
             return self.coef_
-        if self.method == 'LOCAL':
+        if self.method == 'local':
             self.yHat = LinearRegression.fit_local(X, y, k=0.01)
             return self.yHat
+        if self.method == 'ridge':
+            self.coef_ = LinearRegression.fit_ridge(X, y, lmd=1)
+            return self.coef_
+        
 
     @staticmethod
     def fit_norm(X, y):
@@ -99,8 +106,19 @@ class LinearRegression:
             yHat.append(yH[0,0])
         return yHat
             
-        
-    
+    @staticmethod
+    def fit_ridge(X, y, lmd=0.01):
+        """ The ridge regression method
+            lambda | the penalize parameter
+        """
+        m = X.shape[0]
+        E = np.mat(np.eye(m))
+        try:
+            coef = (X.T*X+lmd*E).I*X.T*y
+            return coef
+        except LinAlgError, e:
+            print 'Cant not use norm equation method!', e
+            return
             
     
                 
