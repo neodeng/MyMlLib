@@ -67,7 +67,7 @@ class LinearRegression:
             self.coef_ = LinearRegression.fit_ridge(X, y, lmd=0.001)
             return self.coef_
         if self.method == 'stage':
-            coef_list = LinearRegression.fit_stage(X, y, step=0.01, iternum=100) 
+            coef_list = LinearRegression.fit_stage(X, y, step=0.01, iternum=1000) 
             return coef_list
         
 
@@ -136,8 +136,8 @@ class LinearRegression:
             step | change of beta[j]
             iternum | the number of iteration
         """
-        X = LinearRegression._regularize(X)
-        y = y - np.mean(y)
+        #X = LinearRegression._regularize(X)
+        #y = y - np.mean(y)
         n, m = X.shape
         W = np.zeros((iternum,m))
         w = np.mat(np.zeros((m,1)))
@@ -147,7 +147,7 @@ class LinearRegression:
             minErr = np.inf
             for j in range(m):
                 for sig in [-1, 1]:
-                    wtest = ws.copy()
+                    wtest = w.copy()
                     wtest[j] += step*sig
                     ytest = X*wtest
                     rssE = LinearRegression._rss(ytest, y)
@@ -160,7 +160,18 @@ class LinearRegression:
         
     @staticmethod
     def _regularize(A):
+        m = A.shape[1]
+        for i in range(m):
+            mean = np.mean(A[:,i])
+            std = np.std(A[:,i])
+            A[:,i] = (A[:,i] - mean) / std
+        return A
         
+    @staticmethod
+    def _rss(ytest, y):
+        yerr = y - ytest
+        rss = yerr.T * yerr
+        return rss[0,0]
         
         
 

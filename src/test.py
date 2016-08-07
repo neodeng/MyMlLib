@@ -14,7 +14,7 @@ for line in f.readlines():
     x.append(s[:-1])
     y.append([s[-1]])
 
-
+'''
 print 'norm equation method:'
 ns = lr('norm',False)
 print ns.fit(x,y)
@@ -23,16 +23,21 @@ print 'ridge regression method:'
 rs = lr('ridge',False)
 print rs.fit(x,y)
 
-'''
+
 print 'SGD method:'
 ls = lr('SGD',False)
 ls.fit(x,y)
 
 ls = lr('LOCAL',False)
 yy=ls.fit(x,y)
+'''
 
+print 'stage regression method:'
+ss = lr('stage', False)
+W = ss.fit(x,y)
+print W
 
-
+'''
 #plot
 X=[ele[1] for ele in x]
 Y=[ele[0] for ele in y]
