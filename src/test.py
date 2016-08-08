@@ -3,8 +3,9 @@
 
 import matplotlib.pyplot as plt
 from linear_regression import LinearRegression as lr
+from linear_classification import LogisticRegression as LR
 
-f=open('e0.txt','r')
+f=open('testSet.txt','r')
 x=[]
 y=[]
 
@@ -30,13 +31,13 @@ ls.fit(x,y)
 
 ls = lr('LOCAL',False)
 yy=ls.fit(x,y)
-'''
+
 
 print 'stage regression method:'
 ss = lr('stage', False)
 W = ss.fit(x,y)
 print W
-
+'''
 '''
 #plot
 X=[ele[1] for ele in x]
@@ -52,3 +53,11 @@ plt.show()
 
 '''
 
+print 'logistic sga method'
+lg = LR('sgd')
+w = lg.fit(x,y)
+print w
+
+y = [int(ele[0]) for ele in y]
+
+LR.draw_2d(x,y,w,[0,1])
